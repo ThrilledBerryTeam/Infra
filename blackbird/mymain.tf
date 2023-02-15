@@ -8,8 +8,8 @@ resource "aws_instance" "tf_template" {
   instance_type          = var.instance_type
   key_name               = local.pem_file
   vpc_security_group_ids = [aws_security_group.sample_tf.id]
-  subnet_id = "${element(module.vpc.public_subnets, 0)}"
-  user_data = file("userdata.sh")
+  subnet_id              = element(module.vpc.public_subnets, 0)
+  user_data              = file("userdata.sh")
   tags = {
     Name = "${local.user}-docker-instance"
   }
