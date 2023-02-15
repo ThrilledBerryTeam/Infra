@@ -1,7 +1,6 @@
 resource "aws_security_group" "sample_tf" {
   name        = "ssh-http-https"
   description = "Allow SSH-HTTP-HTTPS for inbound traffic"
-  #vpc_id      = data.module.vpc.vpc_id
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -39,6 +38,3 @@ resource "aws_security_group" "sample_tf" {
     Name = "allow_ssh-http-https"
   }
 }
-
-data "aws_vpc" "vpc" {}
-  

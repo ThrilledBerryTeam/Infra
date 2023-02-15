@@ -17,45 +17,32 @@ provider "aws" {
   profile = "desmond" 
 }
 
-locals {
-  user = "blackeagle"
-  pem_file = "desmond" # change your pem key here !!!
-}
+# locals {
+#   user = "blackeagle"
+#   pem_file = "desmond" # change your pem key here !!!
+# }
 
-
-
-data "aws_ami" "amazon-linux-2" {
-  owners      = ["amazon"]
-  most_recent = true
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-kernel-5.10-hvm*"]
-  }
-}
+################################################################################
+# AWS_INSTANCE
+################################################################################
 
 resource "aws_instance" "tf_template" {
   ami = data.aws_ami.amazon-linux-2.id
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
   key_name = local.pem_file
   vpc_security_group_ids = [aws_security_group.sample_tf.id]
+  # vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id = aws_subnet.my_subnet.id
+  # subnet_id = var.subnet_id
   user_data = file("userdata.sh")
   tags = {
     Name = "${local.user}-docker-instance"
   }
 }
 
+################################################################################
+# AWS_SECURITY_GROUP
+################################################################################
 resource "aws_security_group" "sample_tf" {
   name        = "ssh-http-https"
   description = "Allow SSH-HTTP-HTTPS for inbound traffic"
@@ -97,6 +84,9 @@ resource "aws_security_group" "sample_tf" {
   }
 }
 
+################################################################################
+# VPC
+################################################################################
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
   instance_tenancy = "default"
@@ -106,6 +96,9 @@ resource "aws_vpc" "main" {
   }
 }
 
+################################################################################
+# AWS_SUBNET
+################################################################################
 resource "aws_subnet" "my_subnet" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.10.0/24"
@@ -113,5 +106,28 @@ resource "aws_subnet" "my_subnet" {
 
   tags = {
     Name = "tf-template"
+  }
+}
+
+################################################################################
+# DATA BLOCK AWS_AMI
+################################################################################
+data "aws_ami" "amazon-linux-2" {
+  owners      = ["amazon"]
+  most_recent = true
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm*"]
   }
 }
