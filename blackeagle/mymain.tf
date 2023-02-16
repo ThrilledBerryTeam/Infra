@@ -2,26 +2,6 @@
 //Docker Machine will run on Amazon Linux 2 (ami-026dea5602e368e96) EC2 Instance with
 //custom security group allowing SSH connections from anywhere on port 22.
 
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "~>4.0"
-    }
-  }
-}
-
-provider "aws" {
-  # Configuration options
-  region = "us-east-1"
-  profile = "desmond" 
-}
-
-# locals {
-#   user = "blackeagle"
-#   pem_file = "desmond" # change your pem key here !!!
-# }
-
 ################################################################################
 # AWS_INSTANCE
 ################################################################################
