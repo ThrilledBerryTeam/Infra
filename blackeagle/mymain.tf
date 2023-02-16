@@ -11,9 +11,7 @@ resource "aws_instance" "tf_template" {
   instance_type = var.instance_type
   key_name = local.pem_file
   vpc_security_group_ids = [aws_security_group.sample_tf.id]
-  # vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id = aws_subnet.my_subnet.id
-  # subnet_id = var.subnet_id
   user_data = file("userdata.sh")
   tags = {
     Name = "${local.user}-docker-instance"
