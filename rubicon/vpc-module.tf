@@ -1,7 +1,7 @@
 module "vpc" {
   source           = "terraform-aws-modules/vpc/aws"
   instance_tenancy = "default"
-  name             = "my-vpc"
+  name             = "${local.user}-vpc"
   cidr             = "10.0.0.0/16"
   create_igw       = true
 
