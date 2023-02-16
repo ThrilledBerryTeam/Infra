@@ -14,35 +14,48 @@ terraform {
 provider "aws" {
   # Configuration options
   region = "us-east-1"
-  profile = "desmond" 
+  # profile = "desmond" 
 }
 
-# locals {
-#   user = "blackeagle"
-#   pem_file = "desmond" # change your pem key here !!!
-# }
+locals {
+  user = "sulo"
+  pem_file = "changethis" # change your pem key here !!!
+}
 
-################################################################################
-# AWS_INSTANCE
-################################################################################
+
+
+data "aws_ami" "amazon-linux-2" {
+  owners      = ["amazon"]
+  most_recent = true
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm*"]
+  }
+}
 
 resource "aws_instance" "tf_template" {
   ami = data.aws_ami.amazon-linux-2.id
-  instance_type = var.instance_type
+  instance_type = "t2.micro"
   key_name = local.pem_file
   vpc_security_group_ids = [aws_security_group.sample_tf.id]
-  # vpc_security_group_ids = var.vpc_security_group_ids
-  subnet_id = aws_subnet.my_subnet.id
-  # subnet_id = var.subnet_id
+  subnet_id = aws_subnet.subnetB.id
   user_data = file("userdata.sh")
   tags = {
     Name = "${local.user}-docker-instance"
   }
 }
 
-################################################################################
-# AWS_SECURITY_GROUP
-################################################################################
 resource "aws_security_group" "sample_tf" {
   name        = "ssh-http-https"
   description = "Allow SSH-HTTP-HTTPS for inbound traffic"
@@ -84,9 +97,6 @@ resource "aws_security_group" "sample_tf" {
   }
 }
 
-################################################################################
-# VPC
-################################################################################
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
   instance_tenancy = "default"
@@ -96,38 +106,39 @@ resource "aws_vpc" "main" {
   }
 }
 
-################################################################################
-# AWS_SUBNET
-################################################################################
-resource "aws_subnet" "my_subnet" {
+
+resource "aws_subnet" "subnetA" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.10.0/24"
+  cidr_block        = "10.0.0.0/24"
   availability_zone = "us-east-1a"
 
   tags = {
-    Name = "tf-template"
+    Name = "private"
   }
 }
 
-################################################################################
-# DATA BLOCK AWS_AMI
-################################################################################
-data "aws_ami" "amazon-linux-2" {
-  owners      = ["amazon"]
-  most_recent = true
+resource "aws_subnet" "subnetB" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
 
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+  tags = {
+    Name = "public"
   }
+}
 
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-kernel-5.10-hvm*"]
-  }
+# Generates a secure private key and encodes it as PEM
+resource "tls_private_key" "key_pair" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+# Create the Key Pair
+resource "aws_key_pair" "key_pair" {
+  key_name   = "mykey"  
+  public_key = tls_private_key.key_pair.public_key_openssh
+}
+# Save file
+resource "local_file" "ssh_key" {
+  filename = "${aws_key_pair.key_pair.key_name}.pem"
+  content  = tls_private_key.key_pair.private_key_pem
 }
