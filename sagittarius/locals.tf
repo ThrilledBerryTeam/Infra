@@ -1,4 +1,4 @@
 locals {
-  user = "bluebird"
-  pem_file = "seherSon" # change your pem key here !!!
+  user     = "blackbird"
+  pem_file = "private" # change your pem key here !!!
 }
