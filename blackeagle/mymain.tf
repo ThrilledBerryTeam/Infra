@@ -2,26 +2,6 @@
 //Docker Machine will run on Amazon Linux 2 (ami-026dea5602e368e96) EC2 Instance with
 //custom security group allowing SSH connections from anywhere on port 22.
 
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "~>4.0"
-    }
-  }
-}
-
-provider "aws" {
-  # Configuration options
-  region = "us-east-1"
-  profile = "desmond" 
-}
-
-# locals {
-#   user = "blackeagle"
-#   pem_file = "desmond" # change your pem key here !!!
-# }
-
 ################################################################################
 # AWS_INSTANCE
 ################################################################################
@@ -31,56 +11,10 @@ resource "aws_instance" "tf_template" {
   instance_type = var.instance_type
   key_name = local.pem_file
   vpc_security_group_ids = [aws_security_group.sample_tf.id]
-  # vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id = aws_subnet.my_subnet.id
-  # subnet_id = var.subnet_id
   user_data = file("userdata.sh")
   tags = {
     Name = "${local.user}-docker-instance"
-  }
-}
-
-################################################################################
-# AWS_SECURITY_GROUP
-################################################################################
-resource "aws_security_group" "sample_tf" {
-  name        = "ssh-http-https"
-  description = "Allow SSH-HTTP-HTTPS for inbound traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description      = "HTTPS from VPC"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "HTTP from VPC"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "SSH from VPC"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "allow_ssh-http-https"
   }
 }
 
