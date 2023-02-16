@@ -14,12 +14,12 @@
 # provider "aws" {
 #   # Configuration options
 #   region = "us-east-1"
-#   # profile = "alper" 
+#   # profile = "desmond" 
 # }
 
 # locals {
-#   user = "alper"
-#   pem_file = "rubicon_alper" # change your pem key here !!!
+#   user = "sulo"
+#   pem_file = "changethis" # change your pem key here !!!
 # }
 
 
