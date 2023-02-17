@@ -19,7 +19,7 @@ module "vpc" {
 
   tags = {
     Name        = "template"
-    Company     = "blackbird"
+    Company     = "sagittarius"
     Project     = "infra"
     Terraform   = "true"
     Environment = "dev"
