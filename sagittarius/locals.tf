@@ -1,4 +1,4 @@
 locals {
-  user     = "blackbird"
-  pem_file = "private" # change your pem key here !!!
+  user     = "sagittarius"
+  pem_file = "firstkey" # change your pem key here !!!
 }
