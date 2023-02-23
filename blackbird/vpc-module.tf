@@ -1,7 +1,7 @@
 module "vpc" {
   source           = "terraform-aws-modules/vpc/aws"
   instance_tenancy = "default"
-  name             = "${local.user}-vpc"
+  name             = var.vpc_name
   cidr             = "10.0.0.0/16"
   create_igw       = true
 
@@ -18,10 +18,9 @@ module "vpc" {
   enable_vpn_gateway = false
 
   tags = {
-    Name        = "template"
-    Company     = "blackbird"
-    Project     = "infra"
-    Terraform   = "true"
-    Environment = "dev"
+    Name        = var.vpc_name
+    Company     = var.company_name
+    Project     = var.project_name
+    Environment = var.environment
   }
 }
