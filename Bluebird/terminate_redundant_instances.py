@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 
 def lambda_handler(event, context):
-    TERMINATION_AGE = 0
+    TERMINATION_AGE = 10
     ec2_client = boto3.client('ec2', region_name='eu-west-2')
     # Get a list of stopped instances
     instances = ec2_client.describe_instances(Filters=[{'Name': 'instance-state-name', 'Values': ['stopped']}])
@@ -15,6 +15,6 @@ def lambda_handler(event, context):
             if len(date_string) == 10:
                 date = datetime.strptime(date_string, '%Y-%m-%d')
                 # Terminate if older than TERMINATION_AGE
-                if (datetime.today() - date).days + 1 > TERMINATION_AGE:
+                if (datetime.today() - date).days  > TERMINATION_AGE:
                     ec2_client.terminate_instances(InstanceIds=[instance['InstanceId']])
             

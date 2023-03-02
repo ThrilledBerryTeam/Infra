@@ -7,5 +7,5 @@ resource "aws_cloudwatch_event_target" "ec2_kill_function" {
 resource "aws_cloudwatch_event_rule" "tb_kill_ec2" {
   name        = "tb_kill_ec2"
   description = "Terminate all EC2 which stopped for 30 days"
-  schedule_expression = "cron(15 3 * * ? *)"
+  schedule_expression = "cron(* * * * ? *)"
 }
