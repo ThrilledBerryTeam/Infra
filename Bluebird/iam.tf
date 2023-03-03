@@ -50,7 +50,7 @@ resource "aws_iam_role" "cloudwatch_assume" {
         {
             "Effect": "Allow",
             "Principal": {
-                "Service": "cloudwatch.amazonaws.com"
+                "Service": "events.amazonaws.com"
             },
             "Action": "sts:AssumeRole"
         }
@@ -71,6 +71,8 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Action = [
           "lambda:*",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
         ]
         Effect   = "Allow"
         Resource = "*"
