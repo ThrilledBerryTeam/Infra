@@ -71,6 +71,8 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Action = [
           "lambda:*",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
         ]
         Effect   = "Allow"
         Resource = "*"
