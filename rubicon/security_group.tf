@@ -1,4 +1,4 @@
-resource "aws_security_group" "docker" {
+resource "aws_security_group" "sample_tf" {
   name        = "ssh-http-https"
   description = "Allow SSH-HTTP-HTTPS for inbound traffic"
   vpc_id = module.vpc.vpc_id
